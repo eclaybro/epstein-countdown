@@ -3,45 +3,538 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document Release Countdown</title>
+  <title>Public Document Release Countdown</title>
+
   <style>
-    body {
-      background: #111;
-      color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 100px 20px;
+    :root {
+      --bg: #05060a;
+      --card: #10121b;
+      --accent: #f8d447;
+      --accent-soft: rgba(248, 212, 71, 0.12);
+      --text-main: #f7f7ff;
+      --text-muted: #9ea3b8;
+      --border-subtle: #1b1d29;
+      --danger: #f97373;
     }
-    #timer {
-      font-size: 48px;
-      font-weight: bold;
-      margin-top: 40px;
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #151726 0, #05060a 55%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 960px;
+      padding: 32px 20px 40px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f8d447, #f58f39);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      color: #111;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-text span:first-child {
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      font-size: 15px;
+    }
+
+    .brand-text span:last-child {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .tag {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 17, 28, 0.8);
+      font-size: 11px;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .tag-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18);
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.4fr);
+      gap: 24px;
+      align-items: stretch;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 720px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    .hero-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .hero-title {
+      font-size: clamp(26px, 4vw, 32px);
+      font-weight: 650;
+      line-height: 1.1;
+    }
+
+    .hero-title span {
+      color: var(--accent);
+    }
+
+    .hero-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 32rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .meta-pill {
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(9, 10, 18, 0.9);
+    }
+
+    .countdown-card {
+      background: radial-gradient(circle at top left, #232642, #0b0c14 60%);
+      border-radius: 20px;
+      padding: 20px 20px 18px;
+      border: 1px solid rgba(248, 212, 71, 0.36);
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .countdown-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .countdown-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+    }
+
+    .deadline-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(15, 16, 28, 0.9);
+      border: 1px solid rgba(236, 240, 255, 0.08);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .deadline-pill strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .time-grid {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .time-box {
+      flex: 1;
+      background: rgba(5, 6, 13, 0.88);
+      border-radius: 16px;
+      padding: 10px 6px 9px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .time-value {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .time-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .countdown-footnote {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .alert-note {
+      font-size: 11px;
+      text-align: right;
+      color: var(--danger);
+    }
+
+    .layout-row {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 720px) {
+      .layout-row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: rgba(9, 10, 18, 0.92);
+      border-radius: 18px;
+      padding: 16px 16px 14px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .card + .card {
+      margin-top: 10px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .card-body {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .card-body p + p {
+      margin-top: 6px;
+    }
+
+    .ad-slot-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .ad-slot {
+      min-height: 90px;
+      border-radius: 12px;
+      border: 1px dashed rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      padding: 8px;
+      text-align: center;
+    }
+
+    footer {
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(148, 163, 184, 0.18);
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: underline;
+      text-decoration-style: dotted;
+      text-underline-offset: 3px;
+      font-size: 11px;
+    }
+
+    .disclaimer {
+      color: var(--text-muted);
     }
   </style>
 </head>
 <body>
-  <h1>Public Document Release Countdown</h1>
-  <p>Tracking scheduled release date.</p>
-  <div id="timer">Loading...</div>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <div class="brand-mark">D</div>
+        <div class="brand-text">
+          <span>DropClock</span>
+          <span>Public record release countdown</span>
+        </div>
+      </div>
+
+      <div class="tag">
+        <span class="tag-dot"></span>
+        <span>Live timer. Neutral tracking only.</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <h1 class="hero-title">
+            Live countdown to the scheduled
+            <span>public records release</span>.
+          </h1>
+          <p class="hero-subtitle">
+            This page tracks the deadline set by recent U.S. legislation for
+            the release of specific court-related documents. It is a simple,
+            neutral timer only.
+          </p>
+
+          <div class="hero-meta">
+            <div class="meta-pill">Source: publicly reported signing date</div>
+            <div class="meta-pill">Timer updates in real time</div>
+          </div>
+        </div>
+
+        <aside class="countdown-card">
+          <div class="countdown-header">
+            <div class="countdown-label">Time remaining</div>
+            <div class="deadline-pill">
+              Target deadline:
+              <strong>Dec&nbsp;19,&nbsp;2025&nbsp;–&nbsp;11:59:59&nbsp;PM</strong>
+            </div>
+          </div>
+
+          <div class="time-grid" id="timer">
+            <div class="time-box">
+              <div class="time-value">--</div>
+              <div class="time-label">Days</div>
+            </div>
+            <div class="time-box">
+              <div class="time-value">--</div>
+              <div class="time-label">Hours</div>
+            </div>
+            <div class="time-box">
+              <div class="time-value">--</div>
+              <div class="time-label">Minutes</div>
+            </div>
+            <div class="time-box">
+              <div class="time-value">--</div>
+              <div class="time-label">Seconds</div>
+            </div>
+          </div>
+
+          <div class="countdown-footnote">
+            <div class="status-row">
+              <span class="status-dot"></span>
+              <span>Timer is running based on your local time.</span>
+            </div>
+            <div class="alert-note">
+              Actual release timing is controlled by the relevant authorities.
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="layout-row">
+        <div>
+          <div class="card">
+            <div class="card-title">What this page does</div>
+            <div class="card-body">
+              <p>
+                This is a simple countdown tracking the thirty-day window
+                following the publicly reported signing date of the legislation.
+              </p>
+              <p>
+                The goal is to provide a clear, at-a-glance timer that anyone
+                can reference. No analysis, commentary, or claims are made
+                about the contents of any records.
+              </p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">How the timer is calculated</div>
+            <div class="card-body">
+              <p>
+                The deadline is set to December 19, 2025 at 11:59:59 PM, thirty
+                days after the reported signing date. Your local device time is
+                used to calculate the remaining days, hours, minutes, and
+                seconds.
+              </p>
+              <p>
+                If the official deadline is extended, changed, or records are
+                released early, this timer may no longer reflect the live
+                situation.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <aside>
+          <div class="card">
+            <div class="card-title">Ad space</div>
+            <div class="card-body">
+              <div class="ad-slot-label">Primary banner</div>
+              <div class="ad-slot" id="ad-top">
+                <!-- When you get your ad code, paste it inside this div -->
+                Ad placement – 728×90 / responsive
+              </div>
+
+              <div style="height: 14px;"></div>
+
+              <div class="ad-slot-label">Secondary unit</div>
+              <div class="ad-slot" id="ad-side">
+                <!-- Second ad unit -->
+                Optional additional ad placement
+              </div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <footer>
+        <div class="disclaimer">
+          This site is an independent countdown utility and is not affiliated
+          with any government agency, court, or political organization. Timing
+          and release decisions are made solely by the relevant authorities.
+        </div>
+        <div>
+          <a href="#" aria-disabled="true">Privacy Policy (to be added)</a> ·
+          <a href="#" aria-disabled="true">Terms of Use (to be added)</a>
+        </div>
+      </footer>
+    </main>
+  </div>
 
   <script>
-    // SET YOUR TARGET DATE HERE
-const releaseDate = new Date("2025-12-19T23:59:59").getTime();
+    // Deadline: 30 days after Nov 19, 2025 → Dec 19, 2025 at 11:59:59 PM
+    const releaseDate = new Date("2025-12-19T23:59:59").getTime();
 
-
-    setInterval(() => {
+    function updateTimer() {
       const now = new Date().getTime();
       const diff = releaseDate - now;
 
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      const days = Math.max(Math.floor(diff / (1000 * 60 * 60 * 24)), 0);
+      const hours = Math.max(
+        Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        0
+      );
+      const minutes = Math.max(
+        Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+        0
+      );
+      const seconds = Math.max(Math.floor((diff % (1000 * 60)) / 1000), 0);
 
-      document.getElementById("timer").textContent =
-        `${days}d ${hours}h ${minutes}m ${seconds}s`;
-    }, 1000);
+      const timerEl = document.getElementById("timer");
+      const boxes = timerEl.querySelectorAll(".time-box .time-value");
+
+      boxes[0].textContent = days;
+      boxes[1].textContent = String(hours).padStart(2, "0");
+      boxes[2].textContent = String(minutes).padStart(2, "0");
+      boxes[3].textContent = String(seconds).padStart(2, "0");
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
   </script>
 </body>
 </html>
-
