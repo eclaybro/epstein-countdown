@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document Release Countdown</title>
+  <style>
+    body {
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 100px 20px;
+    }
+    #timer {
+      font-size: 48px;
+      font-weight: bold;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Public Document Release Countdown</h1>
+  <p>Tracking scheduled release date.</p>
+  <div id="timer">Loading...</div>
+
+  <script>
+    // SET YOUR TARGET DATE HERE
+    const releaseDate = new Date("2025-01-15T00:00:00").getTime();
+
+    setInterval(() => {
+      const now = new Date().getTime();
+      const diff = releaseDate - now;
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById("timer").textContent =
+        `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }, 1000);
+  </script>
+</body>
+</html>
